@@ -1,0 +1,51 @@
+import java.io.*;
+
+class Student implements Serializable {
+    private int id;
+    private String name;
+    private double gpa;
+
+    public Student(int id, String name, double gpa) {
+        this.id = id;
+        this.name = name;
+        this.gpa = gpa;
+    }
+
+    public String toString() {
+        return "ID: " + id + ", Name: " + name + ", GPA: " + gpa;
+    }
+}
+
+public class Main {
+    public static void main(String[] args) {
+        try (BufferedReader br = new BufferedReader(new InputStreamReader(System.in))) {
+            System.out.print("Enter ID: ");
+            int id = Integer.parseInt(br.readLine());
+
+            System.out.print("Enter Name: ");
+            String name = br.readLine();
+
+            System.out.print("Enter GPA: ");
+            double gpa = Double.parseDouble(br.readLine());
+
+            Student student = new Student(id, name, gpa);
+
+            try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream("student.ser"))) {
+                oos.writeObject(student);
+                System.out.println("Student object serialized and saved to file.");
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+            try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream("student.ser"))) {
+                Student deserializedStudent = (Student) ois.readObject();
+                System.out.println("Deserialized Student: " + deserializedStudent);
+            } catch (IOException | ClassNotFoundException e) {
+                e.printStackTrace();
+            }
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+}
