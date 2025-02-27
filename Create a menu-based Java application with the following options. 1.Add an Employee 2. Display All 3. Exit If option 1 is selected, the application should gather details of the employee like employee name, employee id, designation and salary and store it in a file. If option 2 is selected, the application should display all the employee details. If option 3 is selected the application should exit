@@ -1,0 +1,80 @@
+import java.io.*;
+import java.util.*;
+
+class Employee implements Serializable {
+    private String name;
+    private int id;
+    private String designation;
+    private double salary;
+
+    public Employee(String name, int id, String designation, double salary) {
+        this.name = name;
+        this.id = id;
+        this.designation = designation;
+        this.salary = salary;
+    }
+
+    public String toString() {
+        return "Name: " + name + ", ID: " + id + ", Designation: " + designation + ", Salary: " + salary;
+    }
+}
+
+public class Main {
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+        List<Employee> employees = new ArrayList<>();
+
+        while (true) {
+            System.out.println("1. Add an Employee");
+            System.out.println("2. Display All");
+            System.out.println("3. Exit");
+            System.out.print("Choose an option: ");
+            int choice = scanner.nextInt();
+            scanner.nextLine();
+
+            switch (choice) {
+                case 1:
+                    System.out.print("Enter Employee Name: ");
+                    String name = scanner.nextLine();
+                    System.out.print("Enter Employee ID: ");
+                    int id = scanner.nextInt();
+                    scanner.nextLine();
+                    System.out.print("Enter Designation: ");
+                    String designation = scanner.nextLine();
+                    System.out.print("Enter Salary: ");
+                    double salary = scanner.nextDouble();
+                    scanner.nextLine();
+
+                    Employee emp = new Employee(name, id, designation, salary);
+                    employees.add(emp);
+
+                    try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream("employees.dat"))) {
+                        oos.writeObject(employees);
+                        System.out.println("Employee added and saved to file.");
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                    break;
+
+                case 2:
+                    try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream("employees.dat"))) {
+                        employees = (List<Employee>) ois.readObject();
+                        for (Employee e : employees) {
+                            System.out.println(e);
+                        }
+                    } catch (IOException | ClassNotFoundException e) {
+                        e.printStackTrace();
+                    }
+                    break;
+
+                case 3:
+                    System.out.println("Exiting...");
+                    scanner.close();
+                    System.exit(0);
+
+                default:
+                    System.out.println("Invalid option. Try again.");
+            }
+        }
+    }
+}
